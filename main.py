@@ -5,7 +5,7 @@ HEIGHT=600
 WIDTH=800
 
 START_SPEED = 10
-ITEMS = ["bag","batter","bottle","chips"] #Non Recycable
+ITEMS = ["bag","battery","bottle","chips"] #Non Recycable
 
 FINAL_LVL = 6
 current_lvl = 1
@@ -76,10 +76,38 @@ def layout_items(items_to_layout):
 
 
 def animate_items(items_to_animate):
-    pass
+    global animations 
+    for item in items_to_animate:
+        duration = START_SPEED-current_lvl
+        animation= animate(item,duration = duration, on_finished= handle_game_over, y=HEIGHT) #checks if object goes to the bottom and ends game if yes
+        animations.append(animation)
 
+def handle_game_over():
+    global game_over
+    game_over=True
 
+def on_mouse_down(pos):
+    global items
+    for item in items:
+        if item.collidepoint(pos):
+            if "paper" in item.image:
+                handle_game_complete()   # calls the function that makes it so after all lvls game complete screen shows up
+            else:
+                handle_game_over()  # checks if you clicked wrong item, and then calls a function
 
+def handle_game_complete():   #function that makes game complete screen
+    global current_lvl, items, game_complete, animations
+    stop_animations(animations)
+    if current_lvl == FINAL_LVL:
+        game_complete = True
+    else:
+        current_lvl = current_lvl + 1  # makes the next lvl happen
+        items = []
+        animations = []
 
-
+def stop_animations(animations_to_stop):  # makes animations stop after winning or losing
+    for animation in animations_to_stop:
+        if animation.running:
+            animation.stop()
+ 
 pgzrun.go()
